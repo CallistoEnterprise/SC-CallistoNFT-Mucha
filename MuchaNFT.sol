@@ -1060,4 +1060,10 @@ contract MuchaNFT is ExtendedNFT, ClassifiedNFT {
     {
         _appendProperty(_tokenId, _propertyId, _content);
     }
+
+    function tokenURI(uint256 _tokenID) public view onlyExistingClasses(token_classes[_tokenID]) returns (string memory)
+    {
+        //Consider that the first (0) property has the same info that a JSON
+        return class_properties[token_classes[_tokenID]][0];
+    }
 }
