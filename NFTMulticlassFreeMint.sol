@@ -84,7 +84,7 @@ contract NFTMulticlassFreeMint is Ownable{
     struct NFTClassMinter
     {
         uint256 amount_minted;
-        mapping (address => bool) public isOwner;
+        mapping (address => bool) isOwner;
         string[] configuration_properties;
     }
 

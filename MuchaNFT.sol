@@ -1013,6 +1013,11 @@ abstract contract ClassifiedNFT is MinterRole, ExtendedNFT, IClassifiedNFT {
     {
         class_properties[_classID][_propertyID] = class_properties[_classID][_propertyID].concat(_content);
     }
+
+    function addClassPropertyWithContent(uint256 _classID, string memory _property) public onlyOwner onlyExistingClasses(_classID)
+    {
+        class_properties[_classID].push(_property);
+    }
 }
 
 contract MuchaNFT is ExtendedNFT, ClassifiedNFT {
