@@ -745,8 +745,8 @@ abstract contract ExtendedNFT is ICallistoNFT, ReentrancyGuard {
         {
             _previousBidder.transfer(_previousBid);
         }
-        // Refund overpaid amount.
-        if (priceOf(_tokenId) < msg.value)
+        // Refund overpaid amount if price is greater than 0
+        if (priceOf(_tokenId) < msg.value && priceOf(_tokenId) > 0)
         {
             _bid = priceOf(_tokenId);
         }
