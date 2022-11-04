@@ -637,7 +637,7 @@ abstract contract ExtendedNFT is ICallistoNFT, ReentrancyGuard {
 
             emit TokenTrade(_tokenId, _bidder, ownerOf(_tokenId), _reward);
 
-            payable(ownerOf(_tokenId)).transfer(_reward);
+            bool sent = payable(ownerOf(_tokenId)).send(_reward);
 
             //bytes calldata _empty;
             delete _bids[_tokenId];
@@ -739,11 +739,12 @@ abstract contract ExtendedNFT is ICallistoNFT, ReentrancyGuard {
         require(msg.value > _previousBid, "New bid must exceed the existing one");
 
         uint256 _bid;
-        
+        bool sent;
+
         // Return previous bid if the current one exceeds it.
         if(_previousBid != 0)
         {
-            _previousBidder.transfer(_previousBid);
+            sent = _previousBidder.send(_previousBid);
         }
         // Refund overpaid amount if price is greater than 0
         if (priceOf(_tokenId) < msg.value && priceOf(_tokenId) > 0)
@@ -764,7 +765,7 @@ abstract contract ExtendedNFT is ICallistoNFT, ReentrancyGuard {
         // WARNING: Creates possibility for reentrancy.
         if (priceOf(_tokenId) < msg.value && priceOf(_tokenId) > 0)
         {
-            payable(msg.sender).transfer(msg.value - priceOf(_tokenId));
+            sent = payable(msg.sender).send(msg.value - priceOf(_tokenId));
         }
     }
     
@@ -774,7 +775,7 @@ abstract contract ExtendedNFT is ICallistoNFT, ReentrancyGuard {
         require(msg.sender == _bidder, "Can not withdraw someone elses bid");
         require(block.timestamp > _timestamp + bidLock, "Bid is time-locked");
         
-        _bidder.transfer(_bid);
+        bool sent = _bidder.send(_bid);
         delete _bids[_tokenId];
         return true;
     }
@@ -831,7 +832,7 @@ abstract contract ExtendedNFT is ICallistoNFT, ReentrancyGuard {
         uint256 _feePercentage = feeLevels[_level].feePercentage;
         
         uint256 _feeAmount = _amountFrom * _feePercentage / 100000;
-        payable(_feeReceiver).transfer(_feeAmount);
+        bool sent = payable(_feeReceiver).send(_feeAmount);
         return _feeAmount;        
     }
     
