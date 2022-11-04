@@ -85,7 +85,6 @@ contract NFTMulticlassFreeMint is Ownable{
     {
         uint256 amount_minted;
         mapping (address => bool) isOwner;
-        string[] configuration_properties;
     }
 
     mapping (uint256 => NFTClassMinter) public classMinters; // Mapping from classID (at NFT contract) to set of variables
@@ -108,6 +107,10 @@ contract NFTMulticlassFreeMint is Ownable{
         emit NFTContractSet(_nftContract, nft_contract);
 
         nft_contract = _nftContract;
+    }
+
+    function getIsOwner(uint _classID, address _address) public view returns (bool) {
+        return classMinters[_classID].isOwner[_address];
     }
 
     function mintNFT(uint256 _classID, address _to) public onlyOwner
