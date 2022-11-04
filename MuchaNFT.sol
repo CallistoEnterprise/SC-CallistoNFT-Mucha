@@ -761,10 +761,10 @@ abstract contract ExtendedNFT is ICallistoNFT, ReentrancyGuard {
         emit NewBid(_tokenId, _bid, _data);
         
         // Send back overpaid amount.
-        // WARHNING: Creates possibility for reentrancy.
+        // WARNING: Creates possibility for reentrancy.
         if (priceOf(_tokenId) < msg.value)
         {
-            payable(msg.sender).transfer(msg.value - priceOf(_tokenId));
+            payable(msg.sender).transfer(msg.value - _bid);
         }
     }
     
