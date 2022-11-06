@@ -84,6 +84,7 @@ contract NFTMulticlassFreeMint is Ownable{
     struct NFTClassMinter
     {
         uint256 amount_minted;
+        uint256 max_amount;
         mapping (address => bool) isOwner;
     }
 
@@ -95,9 +96,10 @@ contract NFTMulticlassFreeMint is Ownable{
         _owner = msg.sender;
     }
 
-    function createNFTClassMinter(uint256 _classID) public onlyOwner
+    function createNFTClassMinter(uint256 _classID, uint256 _max_amount) public onlyOwner
     {
         classMinters[_classID].amount_minted = 0; 
+        classMinters[_classID].max_amount = _max_amount; 
 
         emit ClassMinterCreated(_classID);
     }
