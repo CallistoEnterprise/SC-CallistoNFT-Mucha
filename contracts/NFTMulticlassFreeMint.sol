@@ -117,7 +117,7 @@ contract NFTMulticlassFreeMint is Ownable{
 
     function mintNFT(uint256 _classID, address _to) public onlyOwner
     {
-        require(classMinters[_classID].max_amount < classMinters[_classID].amount_minted, "There are no more NFTs left")
+        require(classMinters[_classID].max_amount < classMinters[_classID].amount_minted, "There are no more NFTs left");
         require(classMinters[_classID].isOwner[_to] == false, "Token already minted to this address");
         uint256 _mintedId = NFTInterface(nft_contract).mintWithClass(_classID);
         unchecked{
