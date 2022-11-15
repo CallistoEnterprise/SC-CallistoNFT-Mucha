@@ -84,8 +84,8 @@ contract NFTMulticlassFreeMint is Ownable{
     struct NFTClassMinter
     {
         uint256 amount_minted;
-        mapping (address => bool) public isOwner;
-        string[] configuration_properties;
+        uint256 max_amount;
+        mapping (address => bool) isOwner;
     }
 
     mapping (uint256 => NFTClassMinter) public classMinters; // Mapping from classID (at NFT contract) to set of variables
@@ -96,9 +96,10 @@ contract NFTMulticlassFreeMint is Ownable{
         _owner = msg.sender;
     }
 
-    function createNFTClassMinter(uint256 _classID) public onlyOwner
+    function createNFTClassMinter(uint256 _classID, uint256 _max_amount) public onlyOwner
     {
         classMinters[_classID].amount_minted = 0; 
+        classMinters[_classID].max_amount = _max_amount; 
 
         emit ClassMinterCreated(_classID);
     }
@@ -110,11 +111,18 @@ contract NFTMulticlassFreeMint is Ownable{
         nft_contract = _nftContract;
     }
 
+    function getIsOwner(uint _classID, address _address) public view returns (bool) {
+        return classMinters[_classID].isOwner[_address];
+    }
+
     function mintNFT(uint256 _classID, address _to) public onlyOwner
     {
+        require(classMinters[_classID].max_amount < classMinters[_classID].amount_minted, "There are no more NFTs left")
         require(classMinters[_classID].isOwner[_to] == false, "Token already minted to this address");
         uint256 _mintedId = NFTInterface(nft_contract).mintWithClass(_classID);
-        classMinters[_classID].amount_minted++;
+        unchecked{
+            classMinters[_classID].amount_minted++;
+        }
         configureNFT(_mintedId, _classID);
         classMinters[_classID].isOwner[_to] = true;
         NFTInterface(nft_contract).transfer(_to, _mintedId, "");
@@ -139,7 +147,9 @@ contract NFTMulticlassFreeMint is Ownable{
         uint256 temp = value;
         uint256 digits;
         while (temp != 0) {
-            digits++;
+            unchecked{
+                digits++;
+            }
             temp /= 10;
         }
         bytes memory buffer = new bytes(digits);
